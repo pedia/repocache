@@ -33,7 +33,7 @@ class PyPI(object):
     """Handles requests to the real PyPI servers
 
     """
-    def __init__(self, pypi_server="http://pypi.python.org/"):
+    def __init__(self, pypi_server="https://pypi.python.org/"):
         self.log = logging.getLogger("pypi")
         if not pypi_server.endswith("/"):
             pypi_server = pypi_server + "/"
