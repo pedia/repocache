@@ -10,10 +10,11 @@ from glob import glob
 
 from pypicache import exceptions
 
+logger = logging.getLogger(__name__)
+
 
 class DiskPackageStore(object):
   def __init__(self, prefix):
-    self.log = logging.getLogger("pypicache.disk")
     self.prefix = prefix
 
   def get_file_path(self, package, filename):
@@ -26,10 +27,10 @@ class DiskPackageStore(object):
     firstletter = package[0]
     prefix = os.path.join(self.prefix,
                           "packages/{0}/{1}".format(firstletter, package))
-    self.log.debug("Using package prefix {0!r}".format(prefix))
+    logger.debug("Using package prefix {0!r}".format(prefix))
     # Try fishing for correct name
     if not os.path.isdir(prefix):
-      self.log.info("Fishing for package matching {0}".format(package))
+      logger.info("Fishing for package matching {0}".format(package))
       g = None
 
       def normalize(package_name):
@@ -44,7 +45,7 @@ class DiskPackageStore(object):
           yield i
         return
     for root, dirs, files in os.walk(prefix, topdown=False):
-      self.log.info("Examining {0} for files".format((root, dirs, files)))
+      logger.info("Examining {0} for files".format((root, dirs, files)))
       for filename in files:
         abspath = os.path.join(root, filename)
         yield dict(package=package,
@@ -54,7 +55,7 @@ class DiskPackageStore(object):
 
   def list_packages(self):
     path = os.path.join(self.prefix, "packages/?/*")
-    self.log.info("Listing packages in {0}".format(path))
+    logger.info("Listing packages in {0}".format(path))
     for packagename in sorted(glob(path)):
       if not os.path.isdir(packagename):
         continue
@@ -65,7 +66,7 @@ class DiskPackageStore(object):
     try:
       return open(path, "rb")
     except IOError:
-      self.log.info("Fishing for package file matching {0}: {1}".format(
+      logger.info("Fishing for package file matching {0}: {1}".format(
           package, filename))
       # Try fishing for the file with different cases
       for my_package in self.list_packages():
@@ -84,7 +85,7 @@ class DiskPackageStore(object):
         raise exceptions.NotOverwritingError("Not overwriting {0}".format(path))
     prefix = os.path.dirname(path)
     if not os.path.isdir(prefix):
-      self.log.debug("Making directories {0}".format(prefix))
+      logger.debug("Making directories {0}".format(prefix))
       os.makedirs(prefix)
     with open(path, "wb") as output:
       # TODO this is working around a difference in file obj vs string somewhere

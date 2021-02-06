@@ -1,0 +1,15 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="pypi:repository-version" content="1.0">
+    <title>Links for {{package.name}}</title>
+  </head>
+  <body>
+    <h1>Links for {{package.name}}</h1>
+    {% for pf in package.files %}
+    <a href="{{pf.filename}}#{{pf.hash}}"{% if "requires" in pf %} data-requires-python="{{pf.requires}}"{% endif %}>{{pf.filename}}</a><br/>
+    {% endfor %}
+  </body>
+</html>
+<!--SERIAL 8748700-->

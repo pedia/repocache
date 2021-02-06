@@ -2,6 +2,8 @@ import logging
 
 from pypicache import exceptions
 
+logger = logging.getLogger(__name__)
+
 
 class PackageCache(object):
   """A proxying cache for python packages
@@ -11,7 +13,6 @@ class PackageCache(object):
     Tries to mirror the PyPI structure
     """
   def __init__(self, package_store, pypi):
-    self.log = logging.getLogger("packagecache")
     self.pypi = pypi
     self.package_store = package_store
 
@@ -54,18 +55,18 @@ class PackageCache(object):
         "failed": [],
     }
     for line in (line.strip() for line in requirements_fp):
-      self.log.debug("Examining requirement {0!r}".format(line))
+      logger.debug("Examining requirement {0!r}".format(line))
       if "==" in line:
         package, version = line.split("==")
         try:
           for url in (url for url in self.pypi.get_urls(package, version)
                       if url["packagetype"] == "sdist"):
-            self.log.debug("Looking at {0!r}".format(url))
+            logger.debug("Looking at {0!r}".format(url))
             self.get_file(package, url["filename"])
             processing_info["cached"].append(url["filename"])
         except exceptions.NotFound:
           processing_info["failed"].append(line)
       else:
-        self.log.debug("Don't know how to handle {0!r}".format(line))
+        logger.debug("Don't know how to handle {0!r}".format(line))
         processing_info["unparseable"].append(line)
     return processing_info
