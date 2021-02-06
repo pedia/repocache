@@ -56,7 +56,7 @@ def pypi_package(name):
   if not p:
     raise NotFound
 
-  return render_template('pypi/package_list.html', package=p)
+  return render_template('pypi/file_list.html', package=p)
 
 
 @app.route("/simple/<name>/<filename>")
