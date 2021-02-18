@@ -1,7 +1,7 @@
 # repocache
-Universal caching and proxying server for pypi/mavn, speedup local using.
+Universal caching and proxying server for pypi/maven, speedup local using.
 
-## How to use for mvn?
+## How to use repocache for mvn?
 ```shell
 pip install repocache
 
@@ -16,8 +16,8 @@ Change ~/.m2/settings.xml as:
     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
     <mirrors>
         <mirror>
-            <id>maven.net.cn</id>
-            <name>one of the central mirrors in china</name>
+            <id>repocache</id>
+            <name>repo-local-mirror</name>
             <url>http://127.0.0.1:5000/public/</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
@@ -25,7 +25,7 @@ Change ~/.m2/settings.xml as:
 </settings>
 ```
 
-## How to use for pip?
+## How to use repocache for pip?
 ```shell
 pip install repocache
 
