@@ -5,7 +5,7 @@ from werkzeug.exceptions import NotFound
 
 from pypicache.pypi import PyPI
 
-app = Flask("pypicache")
+app = Flask("repocache")
 
 
 class Server:

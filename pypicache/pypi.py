@@ -159,18 +159,18 @@ class PyPI(Vendor):
       pf.requires = requires
     return pf
 
-  def html2package(self, name, content):
+  def _html2package(self, name, content):
     root = lxml.html.fromstring(content)
 
     return ObjectDict(
         name=name,
-        files=[i for i in root.xpath('//body/a')],
+        files=[self.extract_line(i) for i in root.xpath('//body/a')],
     )
 
-  def fetch_package(self, name, **kv):
+  def _fetch_package(self, name, **kv):
     url = self.url4package(name, **kv)
     resp = self.fetch(url)
-    return html2package(name, resp.content)
+    return self._html2package(name, resp.content)
 
   def ensure_package(self, name, **kv):
     cache_filename = f'{name}.meta'
@@ -178,7 +178,7 @@ class PyPI(Vendor):
     url = self.url4package(name, **kv)
     return self.fetch_or_load_json(
         name,
-        fetch_handle=lambda: self.fetch_package(name),
+        fetch_handle=lambda: self._fetch_package(name),
     )
 
   def url4package(self, name, **kv):
