@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from pypicache import cache, disk, pypi, server
+import pypicache.server
 
 
 def main():
@@ -39,23 +39,9 @@ def main():
       # "%(asctime)s [%(levelname)s] [%(processName)s-%(threadName)s] [%(name)s] [%(filename)s:%(lineno)d] %(message)s",
       # datefmt="%Y-%m-%d %H:%M:%S%z"
   )
-  logging.info("Debugging: {0!r}".format(args.debug))
-  logging.info("Reloading: {0!r}".format(args.reload))
+  logging.info("Debugging: {0!r} Reloading: {0!r}", args.debug, args.reload)
 
-  #
-  # prefix, storage, upstream
-  # server:
-  #   prefix => storage, upstream
-
-  pypi_server = pypi.PyPI(pypi_server=args.upstream)
-  package_store = disk.DiskPackageStore(args.prefix)
-  package_cache = cache.PackageCache(package_store, pypi_server)
-  app = server.configure_app(
-      pypi_server,
-      package_store,
-      package_cache,
-      debug=args.debug,
-  )
+  app = pypicache.server.configure_app(debug=args.debug)
 
   host, port = args.address.split(':')
   app.run(

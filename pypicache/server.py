@@ -19,17 +19,10 @@ class Server(Flask):
       self.register_blueprint(p.mod)
 
 
-def configure_app(pypi,
-                  package_store,
-                  package_cache,
-                  debug=False,
-                  testing=False):
+def configure_app(debug=False, testing=False):
   app = Server()
   app.debug = debug
   app.testing = testing
-  app.config["pypi"] = pypi
-  app.config["package_store"] = package_store
-  app.config["cache"] = package_cache
 
   return app
 
