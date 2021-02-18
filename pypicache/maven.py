@@ -1,7 +1,6 @@
-from werkzeug.exceptions import NotFound
-
 import lxml.html
-from flask import Blueprint, render_template, request, make_response
+from flask import Blueprint, make_response, render_template, request
+from werkzeug.exceptions import NotFound
 
 from pypicache.vendor import Vendor
 
@@ -20,6 +19,7 @@ def handle(fullname):
   if content is None:
     raise NotFound
 
+  # TODO: Correct content-type
   return make_response(content)
 
 

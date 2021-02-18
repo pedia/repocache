@@ -4,15 +4,15 @@ import json
 from tornado.util import ObjectDict
 
 
-def od_create(o):
-  '''simply recursion create ObjectDict from dict'''
+def object_dict_create(o):
+  '''create ObjectDict from dict'''
   assert isinstance(o, dict)
   d = ObjectDict(o)
   for k, v in d.items():
     if isinstance(v, dict):
-      d[k] = od_create(v)
+      d[k] = object_dict_create(v)
     if isinstance(v, list):
-      d[k] = [od_create(i) for i in v]
+      d[k] = [object_dict_create(i) for i in v]
   return d
 
 
@@ -60,7 +60,8 @@ class Vendor:
         cache_name,
         fetch_handle,
         store_handle=lambda content: json.dumps(content),
-        load_handle=lambda file_content: od_create(json.loads(file_content)),
+        load_handle=lambda file_content: object_dict_create(
+            json.loads(file_content)),
     )
 
   def fetch_or_load_binary(self, cache_name, fetch_handle):
