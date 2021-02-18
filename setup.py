@@ -1,18 +1,15 @@
 from setuptools import setup
 
 setup(
-    name='pypicache',
+    name='repocache',
     version='0.1',
-    description='PyPI caching and proxying server',
+    description='Universal caching and proxying server for pypi/maven',
     author='Michael Twomey',
     author_email='mick@twomeylee.name',
-    url='http://readthedocs.org/projects/pypicache/',
-    packages=['pypicache'],
+    url='https://github.com/pedia/repocache',
+    packages=['repocache'],
     package_data={
-        'pypicache': [
-            'static/*/*',
-            'templates/*.html',
-        ]
+        'repocache': ['templates'],
     },
     install_requires=[
         'certifi==0.0.8',
@@ -22,6 +19,5 @@ setup(
         'Jinja2==2.6',
         'requests==1.1.0',
         'Werkzeug==0.8.3',
-    ]
-    
+    ],
 )

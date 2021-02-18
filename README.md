@@ -1,5 +1,5 @@
 # repocache
-A cache server speedup pypi/npm/mvn installing.
+Universal caching and proxying server for pypi/mavn, speedup local using.
 
 ## How to use for mvn?
 ```shell
@@ -48,5 +48,5 @@ index-url=http://127.0.0.1:5000/pypi/simple
 ```shell
 # start http server
 cd pypicache
-PYTHONPATH=.. python main.py --debug /tmp/packages
+PYTHONPATH=.. python main.py --debug --reload /tmp/packages
 ```
