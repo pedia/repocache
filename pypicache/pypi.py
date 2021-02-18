@@ -1,14 +1,52 @@
 import json
 import logging
-import os
 
 import lxml.html
-
+from flask import Blueprint, render_template, request
 from tornado.util import ObjectDict
 
 from pypicache.vendor import Vendor
 
 logger = logging.getLogger(__name__)
+
+mod = Blueprint(
+    'pypi',
+    __name__,
+    url_prefix='/simple',
+    template_folder='templates/pypi',
+    static_folder='static',
+)
+
+
+@mod.route("/")
+def simple_index():
+  """The top level simple index page
+
+    """
+  return render_template(
+      "simple.html",
+      packages=app.config["package_store"].list_packages(),
+  )
+
+
+@mod.route("/<name>/")
+def pypi_package(name):
+  vendor = PyPI()
+  p = vendor.ensure_package(name)
+  if not p:
+    raise NotFound
+
+  return render_template('pypi/file_list.html', package=p)
+
+
+@mod.route("/<name>/<filename>")
+def pypi_package_file(name, filename):
+  vendor = PyPI()
+  p = vendor.ensure_package(name)
+  if not p:
+    raise NotFound
+
+  return vendor.ensure_file(name, filename)
 
 
 class PyPI(Vendor):
