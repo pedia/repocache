@@ -1,12 +1,8 @@
 import logging
-import mimetypes
-import re
 
-from flask import (Flask, abort, jsonify, make_response, render_template,
-                   url_for, request)
+from flask import (Flask, render_template, request)
 from werkzeug.exceptions import NotFound
 
-from pypicache import exceptions
 from pypicache.pypi import PyPI
 
 app = Flask("pypicache")
@@ -67,4 +63,3 @@ def pypi_package_file(name, filename):
     raise NotFound
 
   return vendor.ensure_file(name, filename)
-
