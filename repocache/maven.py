@@ -2,7 +2,7 @@ import lxml.html
 from flask import Blueprint, make_response, render_template, request
 from werkzeug.exceptions import NotFound
 
-from pypicache.vendor import Vendor
+from repocache.vendor import Vendor
 
 mod = Blueprint(
     'mvn',

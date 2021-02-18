@@ -47,6 +47,6 @@ index-url=http://127.0.0.1:5000/pypi/simple
 ## dev now
 ```shell
 # start http server
-cd pypicache
+cd repocache
 PYTHONPATH=.. python main.py --debug --reload /tmp/packages
 ```

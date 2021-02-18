@@ -5,7 +5,7 @@ import lxml.html
 from flask import Blueprint, render_template, request
 from tornado.util import ObjectDict
 
-from pypicache.vendor import Vendor
+from repocache.vendor import Vendor
 
 logger = logging.getLogger(__name__)
 

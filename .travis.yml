@@ -1,9 +1,0 @@
-language: python
-python:
-  - "2.7"
-# Using too many newer unittest features for 2.6 support in tests
-#  - "2.6"
-#Flask doesn't support python 3 yet
-#  - "3.2"
-install: make init
-script: make test

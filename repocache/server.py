@@ -3,8 +3,8 @@ import logging
 from flask import (Flask, render_template, request)
 from werkzeug.exceptions import NotFound
 
-import pypicache.pypi
-import pypicache.maven
+import repocache.pypi
+import repocache.maven
 
 
 class Server(Flask):
@@ -12,8 +12,8 @@ class Server(Flask):
     super(Server, self).__init__('repocache')
 
     vendors = {
-        'pypi': pypicache.pypi,
-        'mvn': pypicache.maven,
+        'pypi': repocache.pypi,
+        'mvn': repocache.maven,
     }
     for _, p in vendors.items():
       self.register_blueprint(p.mod)

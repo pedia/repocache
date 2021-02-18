@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-import pypicache.server
+import repocache.server
 
 
 def main():
@@ -41,7 +41,7 @@ def main():
   )
   logging.info("Debugging: {0!r} Reloading: {0!r}", args.debug, args.reload)
 
-  app = pypicache.server.configure_app(debug=args.debug)
+  app = repocache.server.configure_app(debug=args.debug)
 
   host, port = args.address.split(':')
   app.run(
