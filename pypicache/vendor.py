@@ -5,6 +5,7 @@ from tornado.util import ObjectDict
 
 
 def od_create(o):
+  '''simply recursion create ObjectDict from dict'''
   assert isinstance(o, dict)
   d = ObjectDict(o)
   for k, v in d.items():
@@ -17,6 +18,9 @@ def od_create(o):
 
 class Vendor:
   def fetch(self, url):
+    '''http request
+    TODO: timeout setting
+    '''
     return requests.get(url)
 
   def fetch_or_load(
