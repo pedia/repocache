@@ -8,9 +8,9 @@ def main():
   parser = argparse.ArgumentParser(
       description="univasal repo cache",
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument("prefix",
+  parser.add_argument("--cache-folder",
                       default="/tmp/packages",
-                      help="Package prefix, e.g. /tmp/packages")
+                      help="Where to store cache files")
   parser.add_argument("--address",
                       default="0.0.0.0:5000",
                       help="Address to bind to.")
@@ -26,20 +26,18 @@ def main():
                       default=1,
                       type=int,
                       help="Number of processes to run")
-  parser.add_argument("--upstream",
+  parser.add_argument("--pypi-upstream",
                       default="https://pypi.org/",
-                      help="Upstream package server to use")
+                      help="Upstream server for pypi")
   args = parser.parse_args()
 
   loglevel = logging.DEBUG if args.debug else logging.INFO
 
-  logging.basicConfig(
-      level=loglevel,
-      # format=
-      # "%(asctime)s [%(levelname)s] [%(processName)s-%(threadName)s] [%(name)s] [%(filename)s:%(lineno)d] %(message)s",
-      # datefmt="%Y-%m-%d %H:%M:%S%z"
-  )
-  logging.info("Debugging: {0!r} Reloading: {0!r}", args.debug, args.reload)
+  logging.basicConfig(level=loglevel)
+  logging.info("Debugging: %s Reloading: %s", args.debug, args.reload)
+
+  logging.getLogger('urllib3.connectionpool').setLevel(logging.ERROR)
+  logging.getLogger('filelock').setLevel(logging.ERROR)
 
   app = repocache.server.configure_app(debug=args.debug)
 

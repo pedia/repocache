@@ -33,7 +33,7 @@ python repocache.main --cache-folder=/tmp
 ```
 
 ```shell
-pip install -i http://127.0.0.1:5000/simple/ --trusted-host=127.0.0.1:5000 click
+pip install -i http://127.0.0.1:5000/simple/ --trusted-host=127.0.0.1:5000 click==7.1.2
 ```
 
 Or change ~/.pip/pip.conf as:
