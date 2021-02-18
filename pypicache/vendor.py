@@ -39,6 +39,19 @@ class Vendor:
       return load_handle(open(cache_name, open_mode[0]).read())
     else:
       d = fetch_handle()
+
+      if d is None:
+        return
+
+      if isinstance(d, requests.Response):
+        d = d.content
+
+      # ....
+      if '/' in cache_name:
+        folder = os.path.dirname(cache_name)
+        if not os.path.exists(folder):
+          os.makedirs(folder)
+
       open(cache_name, open_mode[1]).write(store_handle(d))
       return d
 
