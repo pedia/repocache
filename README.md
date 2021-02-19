@@ -33,7 +33,7 @@ python -m repocache.main --cache-folder=/tmp
 ```
 
 ```shell
-pip install -i http://127.0.0.1:5000/simple/ --trusted-host=127.0.0.1:5000 click==7.1.2
+pip install -i http://127.0.0.1:5000/pypi/simple --trusted-host=127.0.0.1:5000 click==7.1.2
 ```
 
 Or change ~/.pip/pip.conf as:
@@ -55,3 +55,4 @@ PYTHONPATH=.. python main.py --debug --reload /tmp/packages
 ```
 
 This repository was copy from pypicache early, but fully rewrite later.
+PR wellcome.

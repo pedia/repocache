@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def object_dict_create(o):
-  '''create ObjectDict from dict'''
+  '''init ObjectDict from normal dict'''
   assert isinstance(o, dict)
   d = ObjectDict(o)
   for k, v in d.items():
@@ -68,7 +68,7 @@ class Vendor:
       # lock it
       lock = filelock.FileLock(cache_name)
       with lock.acquire():
-        # download via fetch
+        # download via http fetch
         d = fetch_handle()
 
         if d is None:
@@ -84,16 +84,15 @@ class Vendor:
     return self.fetch_or_load(
         cache_name,
         fetch_handle,
-        store_handle=lambda content: json.dumps(content),
-        load_handle=lambda file_content: object_dict_create(
-            json.loads(file_content)),
+        store_handle=lambda x: json.dumps(x),
+        load_handle=lambda x: object_dict_create(json.loads(x)),
     )
 
   def fetch_or_load_binary(self, cache_name, fetch_handle):
     return self.fetch_or_load(
         cache_name,
         fetch_handle,
-        store_handle=lambda content: content,
-        load_handle=lambda file_content: file_content,
+        store_handle=lambda x: x,
+        load_handle=lambda x: x,
         open_mode=('rb', 'wb'),
     )
