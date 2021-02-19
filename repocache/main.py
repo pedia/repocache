@@ -1,45 +1,64 @@
 import argparse
+import configparser
 import logging
 
-import repocache.server
+from .server import Server
 
 
 def main():
   parser = argparse.ArgumentParser(
-      description="univasal repo cache",
+      description='univasal repo cache',
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument("--cache-folder",
-                      default="/tmp/packages",
-                      help="Where to store cache files")
-  parser.add_argument("--address",
-                      default="0.0.0.0:5000",
-                      help="Address to bind to.")
-  parser.add_argument("--debug",
+  parser.add_argument('-f,--config-file',
+                      default='default.cfg',
+                      dest='config_file',
+                      help='config file')
+  parser.add_argument('--address',
+                      default='0.0.0.0:5000',
+                      help='Address to bind to.')
+  parser.add_argument('-v,--verbose',
                       default=False,
-                      action="store_true",
-                      help="Turn on debugging logging and output.")
-  parser.add_argument("--reload",
+                      dest='verbose',
+                      action='store_true',
+                      help='Show additional command output.')
+  parser.add_argument('--debug',
                       default=False,
-                      action="store_true",
-                      help="Turn on automatic reloading on code changes.")
-  parser.add_argument("--processes",
+                      action='store_true',
+                      help='Turn on debugging logging and output.')
+  parser.add_argument('--reload',
+                      default=False,
+                      action='store_true',
+                      help='Turn on automatic reloading on code changes.')
+  parser.add_argument('--processes',
                       default=1,
                       type=int,
-                      help="Number of processes to run")
-  parser.add_argument("--pypi-upstream",
-                      default="https://pypi.org/",
-                      help="Upstream server for pypi")
+                      help='Number of processes to run')
   args = parser.parse_args()
+  if args.verbose:
+    print('args:', args)
+
+  #
+  config = configparser.ConfigParser()
+  config.read(args.config_file)
+
+  if False:  # args.verbose:
+    for section_name in config.sections():
+      print(f'[{section_name}]')
+      sec = config[section_name]
+      for key in sec:
+        print(' ', key, sec[key])
 
   loglevel = logging.DEBUG if args.debug else logging.INFO
-
   logging.basicConfig(level=loglevel)
-  logging.info("Debugging: %s Reloading: %s", args.debug, args.reload)
 
+  # avoid trivial log of other libraries
   logging.getLogger('urllib3.connectionpool').setLevel(logging.ERROR)
   logging.getLogger('filelock').setLevel(logging.ERROR)
 
-  app = repocache.server.configure_app(debug=args.debug)
+  app = Server(config)
+
+  if args.verbose:
+    app.dump_urls()
 
   host, port = args.address.split(':')
   app.run(

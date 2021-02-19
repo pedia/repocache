@@ -2,63 +2,65 @@ import json
 import logging
 
 import lxml.html
-from flask import Blueprint, render_template, request
+from flask import render_template, request
 from tornado.util import ObjectDict
+from werkzeug.exceptions import NotFound
 
-from repocache.vendor import Vendor
+from modular_view import ModularView, expose
+from vendor import Vendor
 
 logger = logging.getLogger(__name__)
 
-mod = Blueprint(
-    'pypi',
-    __name__,
-    url_prefix='/simple',
-    template_folder='templates/pypi',
-    static_folder='static',
-)
+
+def create_upstream(name, section):
+  '''create isnance from section of ConfigParser'''
+  tail = name[len('pypi.upstream.'):]
+  return ObjectDict(name=tail, **section)
 
 
-@mod.route("/")
-def simple_index():
-  """The top level simple index page
+class PyPI(ModularView, Vendor):
+  @expose("/")
+  def simple_index(self):
+    '''The top level simple index page'''
+    # return render_template("pypi-index.html", packages=[])
+    return self.upstreams
 
-    """
-  return render_template(
-      "simple.html",
-      packages=app.config["package_store"].list_packages(),
-  )
+  @expose("/<string:upstream>/<string:name>/")
+  def pypi_package(self, upstream, name):
+    p = self.ensure_package(upstream, name)
+    if not p:
+      raise NotFound
 
+    return render_template('pypi/file_list.html', package=p)
 
-@mod.route("/<name>/")
-def pypi_package(name):
-  vendor = PyPI()
-  p = vendor.ensure_package(name)
-  if not p:
-    raise NotFound
+  @expose("/<string:upstream>/<string:name>/<string:filename>")
+  def pypi_package_file(self, upstream, name, filename):
 
-  return render_template('pypi/file_list.html', package=p)
+    p = self.ensure_package(upstream, name)
+    if not p:
+      raise NotFound
 
+    return self.ensure_file(upstream, name, filename)
 
-@mod.route("/<name>/<filename>")
-def pypi_package_file(name, filename):
-  vendor = PyPI()
-  p = vendor.ensure_package(name)
-  if not p:
-    raise NotFound
+  def __init__(self, config):
+    ModularView.__init__(
+        self,
+        name='pypi',
+        url_prefix='/pypi',
+        template_folder='template/pypi',
+        static_folder='static',
+    )
 
-  return vendor.ensure_file(name, filename)
+    self.upstreams = {}  # name => Dict
 
+    for section_name in config:
+      if section_name.startswith('pypi.upstream.'):
+        u = create_upstream(section_name, config[section_name])
+        self.upstreams[u.name] = u
 
-class PyPI(Vendor):
-  def __init__(self, pypi_server='https://pypi.org/'):
-    if not pypi_server.endswith('/'):
-      pypi_server = pypi_server + '/'
-    self.pypi_server = pypi_server
-
-  ##
   @staticmethod
   def extract_line(tag):
-    '''parse html into a package file
+    '''parse html line into a package file
     '''
     url = tag.attrib.get('href')
     if tag.text.endswith('.whl'):
@@ -84,37 +86,36 @@ class PyPI(Vendor):
         files=[self.extract_line(i) for i in root.xpath('//body/a')],
     )
 
-  def _fetch_package(self, name, **kv):
-    url = self.url4package(name, **kv)
+  def _fetch_package(self, upstream, name, **kv):
+    url = self._url4package(upstream, name, **kv)
     resp = self.fetch(url)
     return self._html2package(name, resp.content)
 
-  def ensure_package(self, name, **kv):
-    cache_filename = f'{name}.meta'
-
-    url = self.url4package(name, **kv)
+  def ensure_package(self, upstream, name, **kv):
+    # TODO: local
     return self.fetch_or_load_json(
-        name,
+        f'{upstream}/{name}.json',
         fetch_handle=lambda: self._fetch_package(name),
     )
 
-  def url4package(self, name, **kv):
-    if 'simple.' in self.pypi_server:
-      simple = ''
-    else:
-      simple = 'simple/'
-    uri = '{}{}{}/{version}'.format(
-        self.pypi_server,
-        simple,
+  def _url4package(self, upstream, name, **kv):
+    ud = self.upstreams.get(upstream)
+
+    if ud is None:
+      raise NotFound
+
+    uri = '{}/{}/{version}'.format(
+        ud.url,
         name,
         version=kv.get('version', ''),
     )
     return uri
 
-  def ensure_file(self, name, filename):
-    p = self.ensure_package(name)
+  def ensure_file(self, upstream, name, filename):
+    p = self.ensure_package(upstream, name)
     for pf in p.files:
       if pf.filename == filename:
+        # TODO: local
         return self.fetch_or_load_binary(
             pf.filename,
             lambda: self.fetch(pf.url).content,
