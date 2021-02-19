@@ -4,8 +4,6 @@ setup(
     name='repocache',
     version='0.1',
     description='Universal caching and proxying server for pypi/maven',
-    author='Michael Twomey',
-    author_email='mick@twomeylee.name',
     url='https://github.com/pedia/repocache',
     packages=['repocache'],
     package_data={

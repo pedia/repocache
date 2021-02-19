@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 mod = Blueprint(
     'mvn',
     __name__,
-    url_prefix='/public',
+    url_prefix='/mvn',
     template_folder='templates/mvn',
     static_folder='static',
 )
