@@ -5,6 +5,7 @@ import os.path
 import filelock
 import requests
 from tornado.util import ObjectDict
+from werkzeug.exceptions import NotFound
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ class Vendor:
         'Apache-Maven/3.6.0 (Java 1.8.0_202-release; Mac OS X 10.16)',
     )
 
+    # proxy
     proxy_http = kw.get('http')
     if proxy_http:
       d = args.setdefault('proxies', {})
@@ -47,12 +49,13 @@ class Vendor:
       d = args.setdefault('proxies', {})
       d['https'] = proxy_https
 
+    # auth
     if 'user' in kw and 'password' in kw:
       auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
       args['auth'] = auth
 
-    logger.info('config %r to fetch args: %s retry: %s user-agent: %s', kw,
-                args, retry, ua)
+    logger.debug('%s config %r to fetch args: %s retry: %s user-agent: %s', url,
+                kw, args, retry, ua)
 
     while retry > 0:
       try:
@@ -102,6 +105,9 @@ class Vendor:
           return
 
         if isinstance(d, requests.Response):
+          if d.status_code != 200:
+            raise NotFound
+
           d = d.content
 
         open(cache_name, open_mode[1]).write(store_handle(d))

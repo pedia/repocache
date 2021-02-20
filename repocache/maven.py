@@ -53,11 +53,15 @@ class Maven(ModularView, Vendor):
         self.upstreams[u.name] = u
 
   def _ensure(self, un, fullname):
-    upstream = self.upstreams.get(un)
-    if upstream is None:
+    ud = self.upstreams.get(un)
+    if ud is None:
       raise NotFound
+
+    ud = ObjectDict(ud)
+    prefix = ud['url']
+    del ud['url']
 
     return self.fetch_or_load_binary(
         f'{un}/{fullname}',
-        fetch_handle=lambda: self.fetch(f'{upstream.url}/{fullname}', **upstream),
+        fetch_handle=lambda: self.fetch(f'{prefix}/{fullname}', **ud),
     )

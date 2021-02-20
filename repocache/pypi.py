@@ -136,5 +136,5 @@ class PyPI(ModularView, Vendor):
         # TODO: local
         return self.fetch_or_load_binary(
             f'{un}/{pf.filename}',
-            lambda: self.fetch(pf.url).content,
+            lambda: self.fetch(pf.url),
         )
