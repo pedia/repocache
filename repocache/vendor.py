@@ -5,6 +5,7 @@ import os.path
 import filelock
 import requests
 from tornado.util import ObjectDict
+from werkzeug.exceptions import NotFound
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +52,8 @@ class Vendor:
       auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
       args['auth'] = auth
 
-    logger.info('config %r to fetch args: %s retry: %s user-agent: %s', kw,
-                args, retry, ua)
+    logger.info('%s config %r to fetch args: %s retry: %s user-agent: %s', url,
+                kw, args, retry, ua)
 
     while retry > 0:
       try:
@@ -102,6 +103,9 @@ class Vendor:
           return
 
         if isinstance(d, requests.Response):
+          if d.status_code != 200:
+            raise NotFound
+
           d = d.content
 
         open(cache_name, open_mode[1]).write(store_handle(d))
