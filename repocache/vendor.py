@@ -22,25 +22,52 @@ def object_dict_create(o):
 
 
 class Vendor:
-  def fetch(self, url):
+  def fetch(self, url, **kw):
     '''http request
     keep trying for timeout error
     '''
-    timeout = 60
-    while timeout < 1000:
+    args = {
+        'timeout': int(kw.get('timeout', 60)),
+    }
+
+    retry = int(kw.get('retry', 1))
+
+    ua = kw.get(
+        'user-agent',
+        'Apache-Maven/3.6.0 (Java 1.8.0_202-release; Mac OS X 10.16)',
+    )
+
+    proxy_http = kw.get('http')
+    if proxy_http:
+      d = args.setdefault('proxies', {})
+      d['http'] = proxy_http
+
+    proxy_https = kw.get('https')
+    if proxy_https:
+      d = args.setdefault('proxies', {})
+      d['https'] = proxy_https
+
+    if 'user' in kw and 'password' in kw:
+      auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
+      args['auth'] = auth
+
+    logger.info('config %r to fetch args: %s retry: %s user-agent: %s', kw,
+                args, retry, ua)
+
+    while retry > 0:
       try:
         return requests.get(
             url,
-            timeout=timeout,
             headers={
-                'User-Agent':
-                    'Apache-Maven/3.6.0 (Java 1.8.0_202-release; Mac OS X 10.16)',
+                'User-Agent': ua,
             },
+            **args,
         )
       except (requests.exceptions.Timeout, TimeoutError,
               requests.exceptions.ConnectionError):
-        logger.info('timeout(%d) for %s', timeout, url)
-        timeout += 120
+        logger.warning('timeout for %s with args: %s', url, args)
+
+      retry -= 1
 
   def fetch_or_load(
       self,

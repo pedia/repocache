@@ -2,7 +2,7 @@ import json
 import logging
 
 import lxml.html
-from flask import render_template, request
+from flask import render_template, request, make_response
 from tornado.util import ObjectDict
 from werkzeug.exceptions import NotFound
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_upstream(name, section):
-  '''create isnance from section of ConfigParser'''
+  '''create dict from section of ConfigParser'''
   tail = name[len('pypi.upstream.'):]
   return ObjectDict(name=tail, **section)
 
@@ -25,33 +25,36 @@ class PyPI(ModularView, Vendor):
     # return render_template("pypi-index.html", packages=[])
     return self.upstreams
 
-  @expose("/<string:upstream>/<string:name>/")
-  def pypi_package(self, upstream, name):
-    p = self.ensure_package(upstream, name)
+  @expose("/<string:un>/<string:name>/")
+  def pypi_package(self, un, name):
+    p = self.ensure_package(un, name)
     if not p:
       raise NotFound
 
     return render_template('pypi/file_list.html', package=p)
 
-  @expose("/<string:upstream>/<string:name>/<string:filename>")
-  def pypi_package_file(self, upstream, name, filename):
-
-    p = self.ensure_package(upstream, name)
+  @expose("/<string:un>/<string:name>/<string:filename>")
+  def pypi_package_file(self, un, name, filename):
+    p = self.ensure_package(un, name)
     if not p:
       raise NotFound
 
-    return self.ensure_file(upstream, name, filename)
+    file_content = self.ensure_file(un, name, filename)
+    if not file_content:
+      raise NotFound
+
+    resp = make_response(file_content)
+    resp.headers['content-type'] = 'application/octet-stream'
+    return resp
 
   def __init__(self, config):
     ModularView.__init__(
         self,
         name='pypi',
         url_prefix='/pypi',
-        template_folder='template/pypi',
-        static_folder='static',
     )
 
-    self.upstreams = {}  # name => Dict
+    self.upstreams = {}  # upstream name => Dict
 
     for section_name in config:
       if section_name.startswith('pypi.upstream.'):
@@ -86,20 +89,35 @@ class PyPI(ModularView, Vendor):
         files=[self.extract_line(i) for i in root.xpath('//body/a')],
     )
 
-  def _fetch_package(self, upstream, name, **kv):
-    url = self._url4package(upstream, name, **kv)
-    resp = self.fetch(url)
-    return self._html2package(name, resp.content)
+  def _fetch(self, un, path):
+    ud = self.upstreams.get(un)
 
-  def ensure_package(self, upstream, name, **kv):
-    # TODO: local
-    return self.fetch_or_load_json(
-        f'{upstream}/{name}.json',
-        fetch_handle=lambda: self._fetch_package(name),
+    if ud is None:
+      raise NotFound
+
+    url = '{}/{}'.format(
+        ud.url,
+        path,
     )
 
-  def _url4package(self, upstream, name, **kv):
-    ud = self.upstreams.get(upstream)
+    ud = ObjectDict(ud)
+    del ud['url']
+
+    return self.fetch(url, **ud)
+
+  def _fetch_package(self, un, name):
+    resp = self._fetch(un, path=name)
+    return self._html2package(name, resp.content)
+
+  def ensure_package(self, un, name, **kv):
+    # TODO: local
+    return self.fetch_or_load_json(
+        f'{un}/{name}.json',
+        fetch_handle=lambda: self._fetch_package(un, name),
+    )
+
+  def _url4package(self, un, name, **kv):
+    ud = self.upstreams.get(un)
 
     if ud is None:
       raise NotFound
@@ -111,12 +129,12 @@ class PyPI(ModularView, Vendor):
     )
     return uri
 
-  def ensure_file(self, upstream, name, filename):
-    p = self.ensure_package(upstream, name)
+  def ensure_file(self, un, name, filename):
+    p = self.ensure_package(un, name)
     for pf in p.files:
       if pf.filename == filename:
         # TODO: local
         return self.fetch_or_load_binary(
-            pf.filename,
+            f'{un}/{pf.filename}',
             lambda: self.fetch(pf.url).content,
         )

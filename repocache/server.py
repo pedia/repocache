@@ -23,7 +23,7 @@ class Server(Flask):
 
     vendors = {
         'pypi': pypi.PyPI(config),
-        # 'mvn': maven,
+        'mvn': maven.Maven(config),
     }
     for _, p in vendors.items():
       self.register_blueprint(p.create_blueprint())
