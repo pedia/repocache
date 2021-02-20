@@ -38,6 +38,7 @@ class Vendor:
         'Apache-Maven/3.6.0 (Java 1.8.0_202-release; Mac OS X 10.16)',
     )
 
+    # proxy
     proxy_http = kw.get('http')
     if proxy_http:
       d = args.setdefault('proxies', {})
@@ -48,11 +49,12 @@ class Vendor:
       d = args.setdefault('proxies', {})
       d['https'] = proxy_https
 
+    # auth
     if 'user' in kw and 'password' in kw:
       auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
       args['auth'] = auth
 
-    logger.info('%s config %r to fetch args: %s retry: %s user-agent: %s', url,
+    logger.debug('%s config %r to fetch args: %s retry: %s user-agent: %s', url,
                 kw, args, retry, ua)
 
     while retry > 0:
