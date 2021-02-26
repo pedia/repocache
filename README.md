@@ -1,38 +1,60 @@
 # repocache
-Universal caching and proxying server for pypi/maven, speedup local using.
+Universal caching and proxying repository server for pypi/maven/..., speedup local using.
 
 ## How to use repocache for mvn?
-```shell
-pip install repocache
-
-python -m repocache.main --cache-folder=/tmp --mvn_upstream=http://maven.aliyun.com/nexus/content/groups/public
-```
 
 Change ~/.m2/settings.xml as:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+                <settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+        <profile>
+            <id>repocache</id>
+            <repositories>
+                <repository>
+                    <id>repocache</id>
+                    <url>http://127.0.0.1:5000/mvn/default/</url>
+                </repository>
+                <repository>
+                    <id>jitpack.io</id>
+                    <url>http://127.0.0.1:5000/mvn/default/</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>nexus</activeProfile>
+    </activeProfiles>
     <mirrors>
         <mirror>
             <id>repocache</id>
-            <name>repo-local-mirror</name>
-            <url>http://127.0.0.1:5000/mvn/public</url>
+            <url>http://127.0.0.1:5000/mvn/default/</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
     </mirrors>
 </settings>
 ```
 
+```shell
+pip install repocache
+
+# Start repocache web server.
+python -m repocache.main -f default.cfg
+
+#
+mvn install
+```
+
+
+
 ## How to use repocache for pip?
 ```shell
 pip install repocache
 
-python -m repocache.main --cache-folder=/tmp
-```
+python -m repocache.main -f default.cfg
 
-```shell
 pip install -i http://127.0.0.1:5000/pypi/simple --trusted-host=127.0.0.1:5000 click==7.1.2
 ```
 
@@ -44,15 +66,9 @@ index-url=http://127.0.0.1:5000/pypi/simple
 ```
 
 ## Settting file
-See default.cfg
+See [default.cfg](default.cfg)
 
 
-## dev now
-```shell
-# start http server
-cd repocache
-PYTHONPATH=.. python main.py --debug --reload /tmp/packages
-```
-
+## Open source
 This repository was copy from pypicache early, but fully rewrite later.
 PR wellcome.

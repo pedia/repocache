@@ -21,12 +21,14 @@ def main():
                       dest='verbose',
                       action='store_true',
                       help='Show additional command output.')
-  parser.add_argument('--debug',
+  parser.add_argument('-d,--debug',
                       default=False,
+                      dest='debug',
                       action='store_true',
                       help='Turn on debugging logging and output.')
-  parser.add_argument('--reload',
+  parser.add_argument('-r,-reload',
                       default=False,
+                      dest='reload',
                       action='store_true',
                       help='Turn on automatic reloading on code changes.')
   parser.add_argument('--processes',
