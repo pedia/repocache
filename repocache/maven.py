@@ -1,6 +1,7 @@
 import logging
 
 from flask import Blueprint, make_response, render_template, request
+from flask.helpers import send_file
 from tornado.util import ObjectDict
 from werkzeug.exceptions import NotFound
 
@@ -20,23 +21,18 @@ class Maven(ModularView, Vendor):
   @expose('/<string:un>/<path:fullname>')
   def handle(self, un, fullname):
     '''un: maven repository name'''
-    content = self._ensure(un, fullname)
-    if content is None:
+    f = self._ensure(un, fullname)
+    if f is None:
       raise NotFound
 
-    # print(request.headers)
-    '''fuck mvn GET with:
-    Cache-Control: no-cache
-    Cache-Store: no-store
-    Pragma: no-cache'''
-
-    resp = make_response(content)
-    resp.cache_control.max_age = 86400
-
     if fullname.endswith('.pom') or fullname.endswith('.xml'):
-      resp.headers['content-type'] = 'application/xml'
+      mimetype = 'application/xml'
+    elif fullname.endswith('.jar'):
+      mimetype = 'application/java-archive'
+    else:
+      mimetype = 'application/octet-stream'
 
-    return resp
+    return send_file(f, mimetype=mimetype)
 
   def __init__(self, config):
     ModularView.__init__(

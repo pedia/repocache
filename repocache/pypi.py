@@ -3,6 +3,7 @@ import logging
 
 import lxml.html
 from flask import render_template, request, make_response
+from flask.helpers import send_file
 from tornado.util import ObjectDict
 from werkzeug.exceptions import NotFound
 
@@ -39,13 +40,14 @@ class PyPI(ModularView, Vendor):
     if not p:
       raise NotFound
 
-    file_content = self.ensure_file(un, name, filename)
-    if not file_content:
+    f = self.ensure_file(un, name, filename)
+    if not f:
       raise NotFound
 
-    resp = make_response(file_content)
-    resp.headers['content-type'] = 'application/octet-stream'
-    return resp
+    # resp = make_response(file_content)
+    # resp.headers['content-type'] = 'application/octet-stream'
+    # return resp
+    return send_file(f, mimetype='application/octet-stream')
 
   def __init__(self, config):
     ModularView.__init__(
@@ -130,6 +132,7 @@ class PyPI(ModularView, Vendor):
     return uri
 
   def ensure_file(self, un, name, filename):
+    # TODO: un.lower
     p = self.ensure_package(un, name)
     for pf in p.files:
       if pf.filename == filename:

@@ -10,16 +10,27 @@ from werkzeug.exceptions import NotFound
 logger = logging.getLogger(__name__)
 
 
-def object_dict_create(o):
+def create_object_dict(o):
   '''init ObjectDict from normal dict'''
-  assert isinstance(o, dict)
+  if isinstance(o, (str, int, float)):
+    return o
+
   d = ObjectDict(o)
   for k, v in d.items():
     if isinstance(v, dict):
-      d[k] = object_dict_create(v)
+      d[k] = create_object_dict(v)
     if isinstance(v, list):
-      d[k] = [object_dict_create(i) for i in v]
+      d[k] = [create_object_dict(i) for i in v]
   return d
+
+
+def write_to(fobj, fin):
+  while True:
+    buf = fin.read(8192)
+    if buf:
+      fobj.write(buf)
+    else:
+      break
 
 
 class Vendor:
@@ -55,7 +66,7 @@ class Vendor:
       args['auth'] = auth
 
     logger.debug('%s config %r to fetch args: %s retry: %s user-agent: %s', url,
-                kw, args, retry, ua)
+                 kw, args, retry, ua)
 
     while retry > 0:
       try:
@@ -76,18 +87,17 @@ class Vendor:
       self,
       cache_name,
       fetch_handle,
-      store_handle,
-      load_handle,
-      open_mode=None,
   ):
-    if open_mode is None:
-      open_mode = ('r', 'w')
-
+    '''
+    def load_handle(file)
+    '''
     if os.path.isdir(cache_name):
       return
 
+    # TODO: if cache_name.endswith('/)
+
     if os.path.exists(cache_name) and os.stat(cache_name).st_size != 0:
-      return load_handle(open(cache_name, open_mode[0]).read())
+      return open(cache_name, 'rb')
     else:
       # create folder first
       if '/' in cache_name:
@@ -105,27 +115,27 @@ class Vendor:
           return
 
         if isinstance(d, requests.Response):
-          if d.status_code != 200:
+          if not d.ok:
             raise NotFound
 
-          d = d.content
-
-        open(cache_name, open_mode[1]).write(store_handle(d))
+          with open(cache_name, 'wb') as f:
+            for chunk in d:
+              f.write(chunk)
+          return open(cache_name, 'rb')
+        else:
+          raise Exception(f'TODO: {type(d)}')
+          # open(cache_name, 'wb').write(d)
         return d
 
   def fetch_or_load_json(self, cache_name, fetch_handle):
-    return self.fetch_or_load(
+    f = self.fetch_or_load(
         cache_name,
         fetch_handle,
-        store_handle=lambda x: json.dumps(x),
-        load_handle=lambda x: object_dict_create(json.loads(x)),
     )
+    return create_object_dict(json.load(f))
+
+    # store_handle=lambda x: json.dumps(x),
+    # load_handle=lambda x: create_object_dict(json.loads(x)),
 
   def fetch_or_load_binary(self, cache_name, fetch_handle):
-    return self.fetch_or_load(
-        cache_name,
-        fetch_handle,
-        store_handle=lambda x: x,
-        load_handle=lambda x: x,
-        open_mode=('rb', 'wb'),
-    )
+    return self.fetch_or_load(cache_name, fetch_handle)
