@@ -1,7 +1,0 @@
-*.pyc
-*.sublime-project
-*.sublime-workspace
-.coverage
-build
-dist
-MANIFEST

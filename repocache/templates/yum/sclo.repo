@@ -1,0 +1,36 @@
+# CentOS-SCLo-rh.repo
+#
+# Please see http://wiki.centos.org/SpecialInterestGroup/SCLo for more
+# information
+
+[centos-sclo-rh]
+name=CentOS-{{version}} - SCLo rh
+
+# http://mirrors.huaweicloud.com/centos/7.9.2009/sclo/x86_64/rh/
+# http://mirrors.huaweicloud.com/centos/7.9.2009/sclo/x86_64/rh/Packages/r/rh-python36-python-3.6.12-1.el7.x86_64.rpm
+baseurl={{domain}}
+# http://192.168.1.2:5000/centos/sclo/repodata/repomd.xml
+# http://mirrors.huaweicloud.com/centos/7.9.2009/sclo/x86_64/rh/repodata/repomd.xml
+
+# mirrorlist=http://mirrorlist.centos.org?arch=$basearch&release={{version}}&repo=sclo-rh
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
+
+[centos-sclo-rh-testing]
+name=CentOS-{{version}} - SCLo rh Testing
+baseurl=http://buildlogs.centos.org/centos/{{version}}/sclo/$basearch/rh/
+gpgcheck=0
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
+
+[centos-sclo-rh-source]
+name=CentOS-{{version}} - SCLo rh Sources
+baseurl=http://vault.centos.org/centos/{{version}}/sclo/Source/rh/
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
+
+[centos-sclo-rh-debuginfo]
+name=CentOS-{{version}} - SCLo rh Debuginfo
+baseurl=http://debuginfo.centos.org/centos/{{version}}/sclo/$basearch/
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo

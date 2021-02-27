@@ -3,9 +3,11 @@ import logging
 from flask import Blueprint, Flask, render_template, request
 from werkzeug.exceptions import NotFound
 
-import maven
-import pypi
-import modular_view
+import repocache.maven as maven
+import repocache.pypi as pypi
+import repocache.yum as yum
+import repocache.npm as npm
+import repocache.rust as rust
 
 mod = Blueprint(
     'server',
@@ -24,18 +26,21 @@ class Server(Flask):
     vendors = {
         'pypi': pypi.PyPI(config),
         'mvn': maven.Maven(config),
+        'yum': yum.YumRepository(config),
+        'npm': npm.NpmRepository(config),
+        'rust': rust.RustupRepository(config),
     }
     for _, p in vendors.items():
       self.register_blueprint(p.create_blueprint())
 
     self.register_blueprint(mod)
-    # self.register_blueprint(modular_view.FooView().create_blueprint())
-    # self.register_blueprint(pypi.PyPI().create_blueprint())
 
     # TODO: blueprint for local package upload
 
   def dump_urls(self):
-    # copy from flask_script.commands.ShowUrls
+    '''Dump blueprints
+    copy from flask_script.commands.ShowUrls
+    '''
     rows = []
     column_length = 0
     column_headers = ('Rule', 'Endpoint', 'Arguments')

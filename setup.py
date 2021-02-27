@@ -4,8 +4,8 @@ long_description = open('README.md').read()
 
 setup(
     name='repocache',
-    version='0.2.2',
-    description='Universal caching and proxying server for pypi and maven',
+    version='0.3',
+    description='Universal caching and proxying server for pypi/maven/npm/yum',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/pedia/repocache',
@@ -18,6 +18,7 @@ setup(
     packages=['repocache'],
     package_data={
         'repocache': [
+            'templates/yum/*.repo',
             'templates/pypi/*.html',
             'templates/*.html',
         ],
