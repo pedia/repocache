@@ -38,6 +38,10 @@ class NpmRepository(ModularView, Vendor):
   @expose("/<string:un>/<string:name>/-/<string:filename>")
   def package_file(self, un, name, filename):
     '''smallest-png/-/smallest-png-2.0.0-2.tgz'''
+    ud = self.upstreams.get(un)
+    if ud is None:
+      raise NotFound
+
     jd = self.ensure_package(un, name)
     if not jd:
       raise NotFound
@@ -46,7 +50,7 @@ class NpmRepository(ModularView, Vendor):
       if vd.dist.tarball.endswith(filename):
         f = self.fetch_or_load_binary(
             f'{un}/{name}/{filename}',
-            fetch_handle=lambda: self.fetch(vd.dist._url),
+            fetch_handle=lambda: self.fetch(vd.dist._url, **ud),
         )
         return send_file(f, mimetype='application/octet-stream')
 

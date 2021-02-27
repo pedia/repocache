@@ -65,7 +65,7 @@ class Vendor:
       auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
       args['auth'] = auth
 
-    logger.debug('%s config %r to fetch args: %s retry: %s user-agent: %s', url,
+    logger.debug(' %s config %r to fetch args: %s retry: %s user-agent: %s', url,
                  kw, args, retry, ua)
 
     while retry > 0:
@@ -89,7 +89,8 @@ class Vendor:
       fetch_handle,
   ):
     '''
-    def load_handle(file)
+    fetch_handle type:
+      def load_handle(file: Stream) -> Stream:
     '''
     if os.path.isdir(cache_name):
       return
