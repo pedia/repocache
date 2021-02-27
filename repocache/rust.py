@@ -59,8 +59,8 @@ class RustupRepository(ModularView, Vendor):
     del ud['url']
 
     f = self.fetch_or_load_binary(
-        f'rust/{un}/{filepath}',
-        fetch_handle=lambda: self.fetch(f'{url}/{filepath}', **ud),
+        'rust/{}/{}'.format(un, filepath),
+        fetch_handle=lambda: self.fetch('{}/{}'.format(url, filepath), **ud),
     )
 
     if filepath.endswith('.xz'):
@@ -75,7 +75,11 @@ class RustupRepository(ModularView, Vendor):
     if ud is None:
       raise NotFound
 
-    resp = self.fetch(f'{ud.url}/-/v1/search', params=request.args, **ud)
+    resp = self.fetch(
+        '{}/-/v1/search'.format(ud.url),
+        params=request.args,
+        **ud,
+    )
     return resp.content
 
   # -/rust/v1/security/audits/quick
@@ -117,7 +121,7 @@ class RustupRepository(ModularView, Vendor):
   def ensure_package(self, un, name):
     # TODO: local
     jd = self.fetch_or_load_json(
-        f'rust/{un}/{name}.json',
+        'rust/{}/{}.json'.format(un, name),
         fetch_handle=lambda: self._fetch(un, name),
     )
 
@@ -125,7 +129,7 @@ class RustupRepository(ModularView, Vendor):
     for v, vd in jd.get('versions').items():
       # if un in
       ud = self.upstreams.get(un)
-      prefix = f'{ud.url}/{name}/-/'
+      prefix = '{}/{}/-/'.format(ud.url, name)
       pos = vd.dist.tarball.find(prefix)
       if pos == 0:
         filename = vd.dist.tarball[pos + len(prefix):]

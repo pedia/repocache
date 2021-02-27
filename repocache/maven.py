@@ -58,6 +58,6 @@ class Maven(ModularView, Vendor):
     del ud['url']
 
     return self.fetch_or_load_binary(
-        f'{un}/{fullname}',
-        fetch_handle=lambda: self.fetch(f'{prefix}/{fullname}', **ud),
+        '{}/{}'.format(un, fullname),
+        fetch_handle=lambda: self.fetch('{}/{}'.format(prefix, fullname), **ud),
     )

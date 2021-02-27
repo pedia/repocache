@@ -50,7 +50,7 @@ class NpmRepository(ModularView, Vendor):
         del ud['url']
 
         f = self.fetch_or_load_binary(
-            f'npm/{un}/{name}/{filename}',
+            'npm/{}/{}/{}'.format(un, name, filename),
             fetch_handle=lambda: self.fetch(vd.dist._url, **ud),
         )
         return send_file(f, mimetype='application/octet-stream')
@@ -63,7 +63,9 @@ class NpmRepository(ModularView, Vendor):
     if ud is None:
       raise NotFound
 
-    resp = self.fetch(f'{ud.url}/-/v1/search', params=request.args, **ud)
+    resp = self.fetch('{}/-/v1/search'.format(ud.url),
+                      params=request.args,
+                      **ud)
     return resp.content
 
   # -/npm/v1/security/audits/quick
@@ -106,7 +108,7 @@ class NpmRepository(ModularView, Vendor):
   def ensure_package(self, un, name):
     # TODO: local
     jd = self.fetch_or_load_json(
-        f'npm/{un}/{name}.json',
+        'npm/{}/{}.json'.format(un, name),
         fetch_handle=lambda: self._fetch(un, name),
     )
 
@@ -117,7 +119,7 @@ class NpmRepository(ModularView, Vendor):
     for v, vd in jd.get('versions').items():
       # if un in
       ud = self.upstreams.get(un)
-      prefix = f'{ud.url}/{name}/-/'
+      prefix = '{}/{}/-/'.format(ud.url, name)
       pos = vd.dist.tarball.find(prefix)
       if pos == 0:
         filename = vd.dist.tarball[pos + len(prefix):]

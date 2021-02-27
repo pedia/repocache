@@ -40,7 +40,7 @@ class YumRepository(ModularView, Vendor):
     try:
       # try special .repo template first
       body = render_template(
-          f'yum/{un}.repo',
+          'yum/{}.repo'.format(un),
           domain=url_for('centos.handle', un=un, fullname='', _external=True),
           version=version,
       )
@@ -69,8 +69,8 @@ class YumRepository(ModularView, Vendor):
     del ud['url']
 
     f = self.fetch_or_load_binary(
-        f'{un}/{fullname}',
-        fetch_handle=lambda: self.fetch(f'{url}/{fullname}', **ud),
+        '{}/{}'.format(un, fullname),
+        fetch_handle=lambda: self.fetch('{}/{}'.format(url, fullname), **ud),
     )
     if fullname.endswith('.repo') or fullname.endswith(
         'readme') or fullname.endswith('.txt'):

@@ -1,3 +1,5 @@
 Flask
 requests
 filelock
+tornado
+lxml

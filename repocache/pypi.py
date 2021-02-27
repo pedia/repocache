@@ -114,7 +114,7 @@ class PyPI(ModularView, Vendor):
   def ensure_package(self, un, name, **kv):
     # TODO: local
     return self.fetch_or_load_json(
-        f'{un}/{name}.json',
+        '{}/{}.json'.format(un, name),
         fetch_handle=lambda: self._fetch_package(un, name),
     )
 
@@ -138,6 +138,6 @@ class PyPI(ModularView, Vendor):
       if pf.filename == filename:
         # TODO: local
         return self.fetch_or_load_binary(
-            f'{un}/{pf.filename}',
+            '{}/{}'.format(un, pf.filename),
             lambda: self.fetch(pf.url),
         )

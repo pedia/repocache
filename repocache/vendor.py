@@ -129,7 +129,7 @@ class Vendor:
         elif isinstance(d, bytes):
           open(cache_name, 'wb').write(d)
         else:
-          raise Exception(f'TODO: {type(d)}')
+          raise Exception('Unsupport type: {}'.format(type(d)))
         return d
 
   def fetch_or_load_binary(self, cache_name, fetch_handle):

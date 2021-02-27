@@ -43,9 +43,9 @@ def main():
   config = configparser.ConfigParser()
   config.read(args.config_file)
 
-  if False:  # args.verbose:
+  if args.verbose:
     for section_name in config.sections():
-      print(f'[{section_name}]')
+      print('[{}]'.format(section_name))
       sec = config[section_name]
       for key in sec:
         print(' ', key, sec[key])

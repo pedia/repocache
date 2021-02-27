@@ -1,13 +1,10 @@
-import logging
-
-from flask import Blueprint, Flask, render_template, request
-from werkzeug.exceptions import NotFound
+from flask import Blueprint, Flask, render_template
 
 import repocache.maven as maven
-import repocache.pypi as pypi
-import repocache.yum as yum
 import repocache.npm as npm
+import repocache.pypi as pypi
 import repocache.rust as rust
+import repocache.yum as yum
 
 mod = Blueprint(
     'server',
