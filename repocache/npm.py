@@ -86,21 +86,22 @@ class NpmRepository(ModularView, Vendor):
         u = create_upstream(section_name, config[section_name])
         self.upstreams[u.name] = u
 
-  def _fetch(self, un, path):
+  def _fetch(self, un, name):
     ud = self.upstreams.get(un)
 
     if ud is None:
       raise NotFound
 
-    url = '{}/{}'.format(
-        ud.url,
-        path,
-    )
+    url = '{}/{}'.format(ud.url, name)
 
     ud = ObjectDict(ud)
     del ud['url']
 
-    return self.fetch(url, **ud)
+    resp = self.fetch(url, **ud)
+    if not resp.ok:
+      raise NotFound
+
+    return resp.json()
 
   def ensure_package(self, un, name):
     # TODO: local
@@ -109,6 +110,9 @@ class NpmRepository(ModularView, Vendor):
         fetch_handle=lambda: self._fetch(un, name),
     )
 
+    return self.fix(un, name, jd)
+
+  def fix(self, un, name, jd):
     # replace `dist.tarball` as local url
     for v, vd in jd.get('versions').items():
       # if un in
