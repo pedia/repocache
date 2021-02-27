@@ -65,7 +65,7 @@ class Vendor:
       auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
       args['auth'] = auth
 
-    logger.debug(' GET %s args: %r to: %s\nretry: %s user-agent: %s', url, kw,
+    logger.debug(' GET %s args: %r to: %s\n  retry: %s user-agent: %s', url, kw,
                  args, retry, ua)
 
     while retry > 0:

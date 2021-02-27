@@ -1,5 +1,5 @@
 # repocache
-Universal caching and proxying repository server for pypi/maven/npm/yum, speedup local using.
+Universal caching and proxying repository server for pypi/maven/npm/yum/rustup, speedup local using.
 
 ## How to startup?
 ```bash
@@ -83,6 +83,14 @@ Or change $HOME/.pip/pip.conf as:
 trusted-host=127.0.0.1:5000
 index-url=http://127.0.0.1:5000/pypi/simple
 ```
+
+## How to use repocache as Rustup?
+```bash
+export RUSTUP_DIST_SERVER=http://127.0.0.1:5000/rust/default
+
+curl http://127.0.0.1:5000/rust/rustup.sh | sh
+```
+
 
 ## Settting file
 See [default.cfg](default.cfg)

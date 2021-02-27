@@ -7,6 +7,7 @@ import repocache.maven as maven
 import repocache.pypi as pypi
 import repocache.yum as yum
 import repocache.npm as npm
+import repocache.rust as rust
 
 mod = Blueprint(
     'server',
@@ -27,6 +28,7 @@ class Server(Flask):
         'mvn': maven.Maven(config),
         'yum': yum.YumRepository(config),
         'npm': npm.NpmRepository(config),
+        'rust': rust.RustupRepository(config),
     }
     for _, p in vendors.items():
       self.register_blueprint(p.create_blueprint())
