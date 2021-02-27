@@ -1,6 +1,8 @@
 # repocache
 Universal caching and proxying repository server for pypi/maven/npm/yum/rustup, speedup local using.
 
+3.5, 3.6, 3.7, 3.8 ![main workflow](https://github.com/pedia/repocache/actions/workflows/main.yml/badge.svg)
+
 ## How to startup?
 ```bash
 pip install repocache
