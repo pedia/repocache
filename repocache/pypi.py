@@ -97,10 +97,7 @@ class PyPI(ModularView, Vendor):
     if ud is None:
       raise NotFound
 
-    url = '{}/{}'.format(
-        ud.url,
-        path,
-    )
+    url = '{}/{}/'.format(ud.url, path)
 
     ud = ObjectDict(ud)
     del ud['url']
