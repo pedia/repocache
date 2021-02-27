@@ -28,6 +28,8 @@ npm config set prefix=$HOME/.node_modules_global
 npm --verbose install smallest-png@2.0.0 -g
 ```
 
+NPM Search is support.
+
 ## How to use repocache as MVN repository?
 
 Change $HOME/.m2/settings.xml as:

@@ -91,7 +91,9 @@ class Vendor:
   ):
     '''
     fetch_handle type:
-      def load_handle(file: Stream) -> Stream:
+      def f(file: Stream) -> Stream:
+    or
+      def f(file: Stream) -> bytes:
     '''
     if os.path.isdir(cache_name):
       return
@@ -124,20 +126,29 @@ class Vendor:
             for chunk in d:
               f.write(chunk)
           return open(cache_name, 'rb')
+        elif isinstance(d, bytes):
+          open(cache_name, 'wb').write(d)
         else:
           raise Exception(f'TODO: {type(d)}')
-          # open(cache_name, 'wb').write(d)
         return d
-
-  def fetch_or_load_json(self, cache_name, fetch_handle):
-    f = self.fetch_or_load(
-        cache_name,
-        fetch_handle,
-    )
-    return create_object_dict(json.load(f))
-
-    # store_handle=lambda x: json.dumps(x),
-    # load_handle=lambda x: create_object_dict(json.loads(x)),
 
   def fetch_or_load_binary(self, cache_name, fetch_handle):
     return self.fetch_or_load(cache_name, fetch_handle)
+
+  def fetch_or_load_json(self, cache_name, fetch_handle):
+    '''
+    this `fetch_handle` return -> Dict
+    return -> ObjectDict'''
+    def dict2bytes(x):
+      assert isinstance(x, dict)
+      return json.dumps(x).encode('utf-8')
+
+    f = self.fetch_or_load(
+        cache_name,
+        fetch_handle=lambda: dict2bytes(fetch_handle()),
+    )
+
+    if isinstance(f, bytes):
+      return create_object_dict(json.loads(f.decode('utf-8')))
+
+    return create_object_dict(json.load(f))

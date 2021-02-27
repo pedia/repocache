@@ -5,8 +5,8 @@ from flask.helpers import send_file
 from tornado.util import ObjectDict
 from werkzeug.exceptions import NotFound
 
-from modular_view import ModularView, expose
-from vendor import Vendor
+from repocache.modular_view import ModularView, expose
+from repocache.vendor import Vendor
 
 logger = logging.getLogger(__name__)
 
