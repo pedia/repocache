@@ -34,7 +34,7 @@ def write_to(fobj, fin):
 
 
 class Vendor:
-  def fetch(self, url, **kw):
+  def fetch(self, url, params=None, **kw):
     '''http request
     keep trying for timeout error
     '''
@@ -65,8 +65,8 @@ class Vendor:
       auth = requests.auth.HTTPBasicAuth(kw['user'], kw['password'])
       args['auth'] = auth
 
-    logger.debug(' %s config %r to fetch args: %s retry: %s user-agent: %s', url,
-                 kw, args, retry, ua)
+    logger.debug(' GET %s args: %r to: %s\nretry: %s user-agent: %s', url, kw,
+                 args, retry, ua)
 
     while retry > 0:
       try:
@@ -75,6 +75,7 @@ class Vendor:
             headers={
                 'User-Agent': ua,
             },
+            params=params,
             **args,
         )
       except (requests.exceptions.Timeout, TimeoutError,

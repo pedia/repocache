@@ -1,7 +1,6 @@
 import json
 import logging
 
-import lxml.html
 from flask import render_template, request, make_response, url_for
 from flask.helpers import send_file
 from tornado.util import ObjectDict
@@ -22,8 +21,7 @@ def create_upstream(name, section):
 class NpmRepository(ModularView, Vendor):
   @expose("/")
   def index(self):
-    '''The top level simple index page'''
-    # return render_template("pypi-index.html", packages=[])
+    '''TODO: list cached packages'''
     return self.upstreams
 
   @expose("/<string:un>/<string:name>")
@@ -48,13 +46,31 @@ class NpmRepository(ModularView, Vendor):
 
     for v, vd in jd.get('versions').items():
       if vd.dist.tarball.endswith(filename):
+        ud = ObjectDict(ud)
+        del ud['url']
+
         f = self.fetch_or_load_binary(
-            f'{un}/{name}/{filename}',
+            f'npm/{un}/{name}/{filename}',
             fetch_handle=lambda: self.fetch(vd.dist._url, **ud),
         )
         return send_file(f, mimetype='application/octet-stream')
 
     raise NotFound
+
+  @expose("/<string:un>/-/v1/search")
+  def search(self, un):
+    ud = self.upstreams.get(un)
+    if ud is None:
+      raise NotFound
+
+    resp = self.fetch(f'{ud.url}/-/v1/search', params=request.args, **ud)
+    return resp.content
+
+  # -/npm/v1/security/audits/quick
+  @expose("/<string:un>/-/<path:left>", methods=('POST',))
+  def other(self, un, left):
+    print('post:', request)
+    return ''
 
   def __init__(self, config):
     ModularView.__init__(
@@ -89,7 +105,7 @@ class NpmRepository(ModularView, Vendor):
   def ensure_package(self, un, name):
     # TODO: local
     jd = self.fetch_or_load_json(
-        f'{un}/{name}.json',
+        f'npm/{un}/{name}.json',
         fetch_handle=lambda: self._fetch(un, name),
     )
 
