@@ -150,7 +150,7 @@ class Vendor:
 
     if isinstance(f, bytes):
       return create_object_dict(json.loads(f.decode('utf-8')))
-    
+
     # fix Python 3.5: the JSON object must be str, not 'bytes'
     # return create_object_dict(json.load(f))
     buf = f.read().decode('utf-8')
