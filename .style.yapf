@@ -1,0 +1,12 @@
+[style]
+based_on_style = google
+indent_width = 2
+split_before_logical_operator = True
+split_before_dict_set_generator = False
+split_before_closing_bracket = True
+blank_line_before_nested_class_or_def = False
+column_limit = 80
+each_dict_entry_on_separate_line = True
+indent_dictionary_value = True
+allow_multiline_dictionary_keys = True
+;spaces_before_comment=0, 10

@@ -1,6 +1,7 @@
 import lxml.html
 from repocache.pypi import PyPI
 
+
 def test_pypi_html_parse():
   line1 = '''<a href="https://files.pythonhosted.org/packages/d2/3d/fa76db83bf75c4f8d338c2fd15c8d33fdd7ad23a9b5e57eb6c5de26b430e/click-7.1.2-py2.py3-none-any.whl#sha256=dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc" data-requires-python="&gt;=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*">click-7.1.2-py2.py3-none-any.whl</a><br/>'''
 

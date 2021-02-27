@@ -3,7 +3,7 @@ name: Python package
 on: [push]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -24,7 +24,7 @@ jobs:
     - name: Lint with yapf
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        yapf -rqp .
+        yapf --diff -rp .
     - name: Test with pytest
       run: |
         pytest
