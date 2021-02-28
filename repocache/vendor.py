@@ -35,6 +35,7 @@ def write_to(fobj, fin):
 
 class Vendor:
   cache_folder = None
+
   def fetch(self, url, params=None, **kw):
     '''http request
     keep trying for timeout error
