@@ -84,12 +84,6 @@ class ModularView(metaclass=_PatchedType):
 
     return self.blueprint
 
-  def template_folder(self):
-    return 'templates'
-
-  def static_folder(self):
-    return 'static'
-
 
 class FooView(ModularView):
   @expose('/')

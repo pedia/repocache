@@ -5,6 +5,7 @@ import repocache.npm as npm
 import repocache.pypi as pypi
 import repocache.rust as rust
 import repocache.yum as yum
+from repocache.vendor import Vendor
 
 mod = Blueprint(
     'server',
@@ -19,6 +20,8 @@ class Server(Flask):
   def __init__(self, config):
     super(Server, self).__init__(__name__)
     self.vendor_config = config
+
+    Vendor.cache_folder = config['server']['cache-folder']
 
     vendors = {
         'pypi': pypi.PyPI(config),

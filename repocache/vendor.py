@@ -34,6 +34,7 @@ def write_to(fobj, fin):
 
 
 class Vendor:
+  cache_folder = None
   def fetch(self, url, params=None, **kw):
     '''http request
     keep trying for timeout error
@@ -99,6 +100,9 @@ class Vendor:
       return
 
     # TODO: if cache_name.endswith('/)
+
+    if Vendor.cache_folder is not None:
+      cache_name = os.path.join(Vendor.cache_folder, cache_name)
 
     if os.path.exists(cache_name) and os.stat(cache_name).st_size != 0:
       return open(cache_name, 'rb')

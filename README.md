@@ -1,7 +1,9 @@
 # repocache
 Universal caching and proxying repository server for pypi/maven/npm/yum/rustup, speedup local using.
 
-3.5, 3.6, 3.7, 3.8 ![main workflow](https://github.com/pedia/repocache/actions/workflows/main.yml/badge.svg)
+Specially used in slow internet connection or intranet.
+
+Python 3.5, 3.6, 3.7, 3.8 ![main workflow](https://github.com/pedia/repocache/actions/workflows/main.yml/badge.svg)
 
 ## How to startup?
 ```bash
@@ -88,7 +90,7 @@ trusted-host=127.0.0.1:5000
 index-url=http://127.0.0.1:5000/pypi/simple
 ```
 
-## How to use repocache as Rustup?
+## How to use repocache as Rustup repository?
 ```bash
 export RUSTUP_DIST_SERVER=http://127.0.0.1:5000/rust/default
 
