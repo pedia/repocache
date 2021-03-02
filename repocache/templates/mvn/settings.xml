@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+            xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+        <profile>
+            <id>repocache</id>
+            <repositories>
+                {%- for name, ud in upstreams.items() %}
+                <repository>
+                    <id>{{name}}</id>
+                    <url>{{url_for('mvn.index', _external=True)}}{{name}}</url>
+                </repository>
+                {%- endfor %}
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>repocache</activeProfile>
+    </activeProfiles>
+    <mirrors>
+        <mirror>
+            <id>repocache</id>
+            <url>http://127.0.0.1:5000/mvn/default/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+    </mirrors>
+</settings>

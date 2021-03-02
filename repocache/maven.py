@@ -18,6 +18,21 @@ def create_upstream(name, section):
 
 
 class Maven(ModularView, Vendor):
+  @expose("/")
+  def index(self):
+    return self.upstreams
+
+  @expose('/settings.xml')
+  def settings(self):
+    '''Generate settings.xml
+    curl -o ~/.m2/settings.xml http://127.0.0.1:5000/mvn/settings.xml
+    '''
+    body = render_template('mvn/settings.xml', upstreams=self.upstreams)
+
+    resp = make_response(body)
+    resp.headers['Content-Type'] = 'application/xml'
+    return resp
+
   @expose('/<string:un>/<path:fullname>')
   def handle(self, un, fullname):
     '''un: maven repository name'''
