@@ -24,7 +24,7 @@ class NpmRepository(ModularView, Vendor):
     '''TODO: list cached packages'''
     return self.upstreams
 
-  @expose("/<string:un>/<string:name>")
+  @expose("/<string:un>/<path:name>")
   def package(self, un, name):
     '''/smallest-png'''
     jd = self.ensure_package(un, name)
