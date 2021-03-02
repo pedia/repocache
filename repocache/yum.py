@@ -31,8 +31,8 @@ class YumRepository(ModularView, Vendor):
     # return render_template("pypi-index.html", packages=[])
     return self.upstreams
 
-  @expose('/<string:un>/Centos-<int:version>.repo')
-  def desc(self, un, version):
+  @expose('/<string:un>/<string:stub><int:version>.repo')
+  def desc(self, un, stub='', version=7):
     ud = self.upstreams.get(un)
     if not ud:
       raise NotFound

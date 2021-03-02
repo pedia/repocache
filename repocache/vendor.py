@@ -125,6 +125,8 @@ class Vendor:
 
         if isinstance(d, requests.Response):
           if not d.ok:
+            # remove empty file, maybe cause filelock ruined
+            os.remove(cache_name)
             raise NotFound
 
           with open(cache_name, 'wb') as f:

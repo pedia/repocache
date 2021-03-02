@@ -13,7 +13,7 @@ paths = [
     '/npm/default/color-name/-/color-name-1.1.4.tgz',
     # yum
     '/centos/huawei/7/os/x86_64/Packages/libXtst-1.2.3-1.el7.x86_64.rpm',
-    '/centos/sclo/Centos-7.repo',
+    '/centos/sclo/centos-7.repo',
     '/centos/sclo/Packages/r/rh-python36-2.0-1.el7.x86_64.rpm',
     # rust
     '/rust/index.html',

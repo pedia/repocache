@@ -31,9 +31,10 @@ def main():
                       dest='reload',
                       action='store_true',
                       help='Turn on automatic reloading on code changes.')
-  parser.add_argument('--processes',
+  parser.add_argument('-p,--processes',
                       default=1,
                       type=int,
+                      dest='processes',
                       help='Number of processes to run')
   args = parser.parse_args()
   if args.verbose:
