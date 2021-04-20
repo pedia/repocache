@@ -5,6 +5,7 @@ import repocache.npm as npm
 import repocache.pypi as pypi
 import repocache.rust as rust
 import repocache.yum as yum
+import repocache.apt as apt
 from repocache.vendor import Vendor
 
 mod = Blueprint(
@@ -28,6 +29,7 @@ class Server(Flask):
         'mvn': maven.Maven(config),
         'yum': yum.YumRepository(config),
         'npm': npm.NpmRepository(config),
+        'debian': apt.AptRepository(config),
         'rust': rust.RustupRepository(config),
     }
     for _, p in vendors.items():

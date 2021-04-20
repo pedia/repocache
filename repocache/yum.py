@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def create_upstream(name, section):
   '''create dict from section of ConfigParser'''
-  tail = name[len('mvn.upstream.'):]
+  tail = name[len('yum.upstream.'):]
   return ObjectDict(name=tail, **section)
 
 

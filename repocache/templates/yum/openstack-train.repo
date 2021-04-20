@@ -1,0 +1,5 @@
+[openstack-train]
+name=openstack-train
+baseurl={{domain}}
+gpgcheck=0
+enabled=1
