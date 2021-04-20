@@ -10,6 +10,7 @@
                 <repository>
                     <id>{{name}}</id>
                     <url>{{url_for('mvn.index', _external=True)}}{{name}}</url>
+                    <!-- {{ud.url}} -->
                 </repository>
                 {%- endfor %}
             </repositories>
@@ -21,7 +22,7 @@
     <mirrors>
         <mirror>
             <id>repocache</id>
-            <url>http://127.0.0.1:5000/mvn/default/</url>
+            <url>{{url_for('mvn.index', _external=True)}}default</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
     </mirrors>

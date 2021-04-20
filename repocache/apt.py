@@ -11,27 +11,17 @@ from repocache.vendor import Vendor
 logger = logging.getLogger(__name__)
 
 
-def create_upstream(name, section):
-  '''create dict from section of ConfigParser'''
-  tail = name[len('yum.upstream.'):]
-  return ObjectDict(name=tail, **section)
-
-
 #
-# YUM: Yellowdog Updater, Modified
-#
-class YumRepository(ModularView, Vendor):
-  '''Most important URL
-  http://192.168.1.2:5000/centos/sclo/repodata/repomd.xml
-  http://mirrors.huaweicloud.com/centos/7.9.2009/sclo/x86_64/rh/repodata/repomd.xml
-  '''
-  @expose("/")
+# APT: Advanced Packaging Tools
+# https://wiki.debian.org/SecureApt
+class AptRepository(ModularView, Vendor):
+  @expose("/index.json")
   def index(self):
     '''The top level simple index page'''
     # return render_template("pypi-index.html", packages=[])
     return self.upstreams
 
-  @expose('/<string:un>/<string:stub><int:version>.repo')
+  @expose('/<string:un>/<string:version>/sources.list')
   def desc(self, un, stub='', version=7):
     ud = self.upstreams.get(un)
     if not ud:
@@ -40,15 +30,15 @@ class YumRepository(ModularView, Vendor):
     try:
       # try special .repo template first
       body = render_template(
-          'yum/{}.repo'.format(un),
-          domain=url_for('centos.handle', un=un, fullname='', _external=True),
+          'apt/{}.repo'.format(un),
+          domain=url_for('apt.handle', un=un, fullname='', _external=True),
           version=version,
       )
     except:
       # univasal .repo
       body = render_template(
-          'yum/centos.repo',
-          domain=url_for('centos.handle', un=un, fullname='', _external=True),
+          'apt/sources.list',
+          domain=url_for('apt.handle', un=un, fullname='', _external=True),
           version=version,
       )
 
@@ -56,10 +46,32 @@ class YumRepository(ModularView, Vendor):
     resp.headers.set('Content-Type', 'text/plain')
     return resp
 
+  # TODO: maybe implement 3 function is better
+  # @expose('/<string:un>/debian/<path:fullname>')
+  # @expose('/<string:un>/dists/<path:fullname>')
+  # @expose('/<string:un>/debian-security/<path:fullname>')
   @expose('/<string:un>/<path:fullname>')
   def handle(self, un, fullname):
-    '''un: repository name'''
+    '''un: repository name
+    curl -vs http://192.168.1.3:5000/debian/huawei/debian/dists/buster/InRelease
+    curl -vs http://192.168.1.3:5000/debian/huawei/debian-security/dists/buster/updates/InRelease
+    curl -vs http://192.168.1.3:5000/debian/huawei/debian/dists/buster-updates/InRelease
 
+        https://repo.huaweicloud.com/debian/dists/buster/InRelease
+        https://repo.huaweicloud.com/debian/dists/buster-updates/InRelease
+        https://repo.huaweicloud.com/debian-security/dists/buster/updates/InRelease
+        https://repo.huaweicloud.com/debian-cd
+    '''
+
+    print('>> handle', un, fullname)
+
+    ud = self.upstreams.get(un)
+    if ud is None:
+      raise NotFound
+
+    return self._fetch(un, fullname)
+
+  def _fetch(self, un, fullname):
     ud = self.upstreams.get(un)
     if ud is None:
       raise NotFound
@@ -75,8 +87,8 @@ class YumRepository(ModularView, Vendor):
     if fullname.endswith('.repo') or fullname.endswith(
         'readme') or fullname.endswith('.txt'):
       mimetype = 'text/plain'
-    elif fullname.endswith('.rpm'):
-      mimetype = 'application/x-redhat-package-manager'
+    elif fullname.endswith('.deb'):
+      mimetype = 'application/x-debian-package'
     elif fullname.endswith('.xml'):
       mimetype = 'text/xml'
     else:
@@ -87,13 +99,19 @@ class YumRepository(ModularView, Vendor):
   def __init__(self, config):
     ModularView.__init__(
         self,
-        name='centos',
-        url_prefix='/centos',
+        name='debian',
+        url_prefix='/debian',
     )
+
+    def create_upstream(name, section):
+      '''create dict from section of ConfigParser'''
+      print(name, section)
+      tail = name[len('debian.upstream.'):]
+      return ObjectDict(name=tail, **section)
 
     self.upstreams = {}  # upstream name => Dict
 
     for section_name in config:
-      if section_name.startswith('yum.upstream.'):
+      if section_name.startswith('debian.upstream.'):
         u = create_upstream(section_name, config[section_name])
         self.upstreams[u.name] = u

@@ -105,3 +105,8 @@ See [default.cfg](default.cfg)
 ## Open source
 This repository was copy from pypicache early, but fully rewrite later.
 PR wellcome.
+
+# TODO:
+
+Downloaded: http://conjars.org/repo/org/pentaho/pentaho-aggdesigner/5.1.5-jhyde/pentaho-aggdesigner-5.1.5-jhyde.pom (8.6 kB at 16 kB/s)
+Downloaded: http://conjars.org/repo/org/pentaho/pentaho-aggdesigner-algorithm/5.1.5-jhyde/pentaho-aggdesigner-algorithm-5.1.5-jhyde.jar

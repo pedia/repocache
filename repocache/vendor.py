@@ -33,7 +33,7 @@ def write_to(fobj, fin):
       break
 
 
-class Vendor:
+class Vendor(object):
   cache_folder = None
 
   def fetch(self, url, params=None, **kw):
@@ -112,7 +112,11 @@ class Vendor:
       if '/' in cache_name:
         folder = os.path.dirname(cache_name)
         if not os.path.exists(folder):
-          os.makedirs(folder)
+          try:
+            # Maybe failed with folder exists in multiprocessing.
+            os.makedirs(folder)
+          except:
+            pass
 
       # lock it
       lock = filelock.FileLock(cache_name)

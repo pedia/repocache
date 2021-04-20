@@ -1,0 +1,7 @@
+[MooseFS]
+name=MooseFS $releasever - $basearch
+baseurl={{domain}}/yum/el{{version}}
+# baseurl=http://ppa.moosefs.com/moosefs-3/yum/el7
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MooseFS
+enabled=1

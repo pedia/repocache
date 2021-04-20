@@ -24,18 +24,25 @@ class NpmRepository(ModularView, Vendor):
     '''TODO: list cached packages'''
     return self.upstreams
 
-  @expose("/<string:un>/<path:name>")
+  @expose('/<string:un>/<string:name>')
   def package(self, un, name):
     '''/smallest-png'''
+    return {'name': name}
     jd = self.ensure_package(un, name)
     if not jd:
       raise NotFound
 
     return jd
 
+  @expose('/<string:un>/<string:name>/<string:n2>')
+  def package2(self, un, name, n2):
+    '''/smallest-png'''
+    return {'name': name, 'n2': n2}
+
   @expose("/<string:un>/<string:name>/-/<string:filename>")
   def package_file(self, un, name, filename):
     '''smallest-png/-/smallest-png-2.0.0-2.tgz'''
+    return {'name': name, 'filename': filename}
     ud = self.upstreams.get(un)
     if ud is None:
       raise NotFound
